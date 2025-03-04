@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using ToDoAPI.Model;
 using ToDoAPI.RepoLayer;
 
@@ -8,16 +9,27 @@ namespace ToDoAPI.Controllers
     [ApiController]
     public class ToDoController : ControllerBase
     {
+        
         private readonly IToDoRepository _repository;
+        private readonly IMapper _mapper;
+
         public ToDoController(IToDoRepository repository)
         {
             _repository = repository;
         }
 
+        public ToDoController(IToDoRepository repository, IMapper mapper)
+        {
+            _repository = repository;
+            _mapper = mapper;
+        }
+
         [HttpGet]
         public ActionResult<IEnumerable<ToDoItem>> Get()
         {
-            return Ok(_repository.getAllTodos());
+            var todos = _repository.getAllTodos();
+            var todoDtos = _mapper.Map<IEnumerable<ToDoItem>>(todos);
+            return Ok(todoDtos);
         }
 
         [HttpGet("{id}")]
@@ -28,14 +40,18 @@ namespace ToDoAPI.Controllers
             {
                 return NotFound();
             }
-            return Ok(todo);
+            var todosDto = _mapper.Map<ToDoItem>(todo);
+            return Ok(todosDto);
         }
 
         [HttpPost]
-        public ActionResult<ToDoItem> addTodoItem([FromBody]ToDoItem todo)
+        public ActionResult<ToDoItem> addTodoItem([FromBody]ToDoItem todoDto)
         {
+            var todo = _mapper.Map<ToDoItem>(todoDto);
             _repository.addTodo(todo);
-            return CreatedAtAction("Get", new { id = todo.Id }, todo);
+            
+            var CreatedTodoDto = _mapper.Map<ToDoItem>(todo);
+            return CreatedAtAction("Get", new { id = todo.Id }, CreatedTodoDto);
         }
 
         [HttpPut("{id}")]
@@ -46,7 +62,8 @@ namespace ToDoAPI.Controllers
             {
                 return NotFound();
             }
-            _repository.updateTodo(id, todo);
+            _mapper.Map(todo, existingTodo);
+            _repository.updateTodo(id, existingTodo);
             return NoContent();
         }
 
