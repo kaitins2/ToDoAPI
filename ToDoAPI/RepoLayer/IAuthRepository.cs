@@ -6,10 +6,10 @@ namespace ToDoAPI.RepoLayer
 {
     public interface IAuthRepository
     {
-        authenticatedResponseDto Register(User user);
+        Task<authenticatedResponseDto> RegisterAsync(RegisterUserDto registerUserDto);
         authenticatedResponseDto Login(string username, string password);
         bool UserExists(string username);
-        string GenerateJWTToken(User user);
+        string GenerateJWTToken(User user, DateTime expiresAt);
         //string GenerateRefreshToken();  Optional for advanced authentication
        // bool ValidateRefreshToken(string refreshToken); // Optional
     }

@@ -11,12 +11,12 @@ namespace ToDoAPI.RepoLayer
             _context = context;
         }
 
-        public List<ToDoItem> getAllTodos()
+        public List<ToDoItem> getAllTodos(int userId)
         {
             return _context.ToDoItems.ToList();
         }
 
-        public ToDoItem getToDoById(int Id) 
+        public ToDoItem getToDoById(int Id, int userId) 
         {
             return _context.ToDoItems.Find(Id);
         }

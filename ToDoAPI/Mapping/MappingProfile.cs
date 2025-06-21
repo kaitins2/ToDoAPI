@@ -13,7 +13,9 @@ namespace ToDoAPI.Mapping
             
             CreateMap<ToDoItem, ToDoDto>();
             CreateMap<CreateToDoDto, ToDoDto>();
-            
+
+            CreateMap<RegisterUserDto, User>();
+
         }
     }
 }

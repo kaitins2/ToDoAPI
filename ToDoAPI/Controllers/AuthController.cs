@@ -19,24 +19,22 @@ namespace ToDoAPI.Controllers
         }
 
         [HttpPost("register")]
-        public ActionResult<RegisterUserDto> Register([FromBody] RegisterUserDto registerDto) 
+        public async Task<ActionResult<authenticatedResponseDto>> Register([FromBody] RegisterUserDto userDto)
         {
-            if (!ModelState.IsValid) 
+            if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            if (_repository.UserExists(registerDto.Username)) 
+            if (_repository.UserExists(userDto.Username))
             {
                 return BadRequest("User already exists");
             }
 
-            var user = _mapper.Map<User>(registerDto);
-            _repository.Register(user);
+            // Call the repo method which returns the full authenticated response
+            var response = await _repository.RegisterAsync(userDto);
 
-            var token = _repository.GenerateJWTToken(user);
-
-            return Ok(new authenticatedResponseDto { token = token, username = user.Username });
+            return Ok(response);
         }
 
         [HttpPost("login")]

@@ -2,10 +2,15 @@
 using Microsoft.AspNetCore.Mvc;
 using ToDoAPI.Model;
 using ToDoAPI.RepoLayer;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using ToDoAPI.Model.DTO;
+
 
 namespace ToDoAPI.Controllers
 {
     [Route("api/todo")]
+    [Authorize]
     [ApiController]
     public class ToDoController : ControllerBase
     {
@@ -13,10 +18,10 @@ namespace ToDoAPI.Controllers
         private readonly IToDoRepository _repository;
         private readonly IMapper _mapper;
 
-        public ToDoController(IToDoRepository repository)
-        {
-            _repository = repository;
-        }
+        //public ToDoController(IToDoRepository repository)
+        //{
+        //    _repository = repository;
+        //}
 
         public ToDoController(IToDoRepository repository, IMapper mapper)
         {
@@ -27,59 +32,73 @@ namespace ToDoAPI.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<ToDoItem>> Get()
         {
-            var todos = _repository.getAllTodos();
-            var todoDtos = _mapper.Map<IEnumerable<ToDoItem>>(todos);
-            return Ok(todoDtos);
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            var todos = _repository.getAllTodos(userId);
+            return Ok(todos);
         }
+
+
 
         [HttpGet("{id}")]
-        public ActionResult<ToDoItem> getToDoById(int id) 
+        public ActionResult<ToDoItem> getToDoById(int id)
         {
-            var todo = _repository.getToDoById(id);
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            var todo = _repository.getToDoById(id, userId);
             if (todo == null)
-            {
                 return NotFound();
-            }
-            var todosDto = _mapper.Map<ToDoItem>(todo);
-            return Ok(todosDto);
+
+            return Ok(todo);
         }
+
 
         [HttpPost]
-        public ActionResult<ToDoItem> addTodoItem([FromBody]ToDoItem todoDto)
+        public ActionResult<ToDoItem> addTodoItem([FromBody] CreateToDoDto todoDto)
         {
-            var todo = _mapper.Map<ToDoItem>(todoDto);
-            _repository.addTodo(todo);
-            
-            var CreatedTodoDto = _mapper.Map<ToDoItem>(todo);
-            return CreatedAtAction("Get", new { id = todo.Id }, CreatedTodoDto);
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+            var newTodo = new ToDoItem
+            {
+                Title = todoDto.Title,
+                Description = todoDto.Description,
+                IsCompleted = false,
+                CreatedAt = DateTime.UtcNow,
+                UserId = userId
+            };
+
+            _repository.addTodo(newTodo);
+            return CreatedAtAction("getToDoById", new { id = newTodo.Id }, newTodo);
         }
 
+
         [HttpPut("{id}")]
-        public ActionResult<ToDoItem> updateTodo(int id, [FromBody] ToDoItem todo)
+        public ActionResult updateTodo(int id, [FromBody] ToDoItem todo)
         {
-            var existingTodo = _repository.getToDoById(id);
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            var existingTodo = _repository.getToDoById(id, userId);
+
             if (existingTodo == null)
-            {
                 return NotFound();
-            }
-            _mapper.Map(todo, existingTodo);
+
+            existingTodo.Title = todo.Title;
+            existingTodo.IsCompleted = todo.IsCompleted;
+
             _repository.updateTodo(id, existingTodo);
             return NoContent();
         }
 
+
         [HttpDelete("{id}")]
         public ActionResult deleteTodoItem(int id)
         {
-            var todo = _repository.getToDoById(id);
-            
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            var todo = _repository.getToDoById(id, userId);
+
             if (todo == null)
-            {
                 return NotFound();
-            }
-            
+
             _repository.deleteTodo(id);
-            
             return NoContent();
         }
+
     }
 }
