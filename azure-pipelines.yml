@@ -1,5 +1,5 @@
 trigger:
-- main  # or 'dev' if you're using a dev branch
+- master  # or 'dev' if you're using a dev branch
 
 pool:
   vmImage: 'ubuntu-latest'
