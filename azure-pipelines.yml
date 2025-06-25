@@ -2,7 +2,7 @@ trigger:
 - master  # or 'dev' if you're using a dev branch
 
 pool:
-  vmImage: 'ubuntu-latest'
+  name: 'Default'
 
 variables:
   buildConfiguration: 'Release'
