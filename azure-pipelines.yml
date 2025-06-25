@@ -1,0 +1,23 @@
+trigger:
+- master  # or 'dev' if you're using a dev branch
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  buildConfiguration: 'Release'
+
+steps:
+- task: UseDotNet@2
+  inputs:
+    packageType: 'sdk'
+    version: '8.x'  # or 7.x/6.x depending on your project
+
+- script: dotnet restore
+  displayName: 'Restore NuGet packages'
+
+- script: dotnet build --configuration $(buildConfiguration)
+  displayName: 'Build the project'
+
+- script: dotnet test --no-build --verbosity normal
+  displayName: 'Run unit tests'
