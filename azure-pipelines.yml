@@ -11,7 +11,7 @@ steps:
 - task: UseDotNet@2
   inputs:
     packageType: 'sdk'
-    version: '8.x'  # or 7.x/6.x depending on your project
+    version: '9.0.x'  # or 7.x/6.x depending on your project
 
 - script: dotnet restore
   displayName: 'Restore NuGet packages'
