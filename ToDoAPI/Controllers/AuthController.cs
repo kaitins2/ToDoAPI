@@ -38,7 +38,7 @@ namespace ToDoAPI.Controllers
         }
 
         [HttpPost("login")]
-        public ActionResult<authenticatedResponseDto> Login([FromBody] LoginDto loginDto) 
+        public async Task<ActionResult<authenticatedResponseDto>> Login([FromBody] LoginDto loginDto)
         {
             if (!ModelState.IsValid) 
             {
