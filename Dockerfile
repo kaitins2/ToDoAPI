@@ -1,19 +1,19 @@
-# Stage 1: Build
+# Build stage
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /app
 
-# Copy and restore the project
-COPY ToDoAPI.csproj ./
-RUN dotnet restore
+# Copy csproj and restore
+COPY ToDoAPI/ToDoAPI.csproj ./ToDoAPI/
+RUN dotnet restore ToDoAPI/ToDoAPI.csproj
 
-# Copy the rest of the source code
-COPY . ./
+# Copy the rest of the code
+COPY ToDoAPI/. ./ToDoAPI/
+
+WORKDIR /app/ToDoAPI
 RUN dotnet publish -c Release -o /app/publish
 
-# Stage 2: Run
-FROM mcr.microsoft.com/dotnet/aspnet:8.0
+# Runtime stage
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
 COPY --from=build /app/publish .
-
-ENV ASPNETCORE_URLS=http://+:$PORT
 ENTRYPOINT ["dotnet", "ToDoAPI.dll"]
