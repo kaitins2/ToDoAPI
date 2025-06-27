@@ -97,6 +97,15 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.Use(async (context, next) =>
+{
+    if (context.Request.Headers.ContainsKey("Origin"))
+    {
+        Console.WriteLine($"Origin: {context.Request.Headers["Origin"]}");
+    }
+    await next();
+});
+
 app.UseCors("AllowReactApp");
 
 app.UseAuthentication();
