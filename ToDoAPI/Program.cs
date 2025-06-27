@@ -26,7 +26,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp", policy =>
     {
-        policy.WithOrigins("https://todo-webapp-frontend.vercel.app/ ")
+        policy.WithOrigins("https://todo-webapp-frontend.vercel.app")
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
