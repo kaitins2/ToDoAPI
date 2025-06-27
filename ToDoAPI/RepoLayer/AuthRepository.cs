@@ -25,19 +25,22 @@ namespace ToDoAPI.RepoLayer
 
         public string GenerateJWTToken(User user, DateTime expiresAt)
         {
+            var issuer = _configuration["Jwt:Issuer"];
+            var audience = _configuration["Jwt:Audience"];
+            var secretKey = _configuration["Jwt:Key"];
+
             var claims = new[]
             {
         new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
         new Claim(ClaimTypes.Name, user.Username)
     };
 
-            var secretKey = _configuration["Jwt:Key"];
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 
             var token = new JwtSecurityToken(
-                issuer: "your_app_name_or_domain",
-                audience: "your_app_name_or_domain",
+                issuer: issuer,
+                audience: audience,
                 claims: claims,
                 expires: expiresAt,
                 signingCredentials: creds
@@ -77,28 +80,36 @@ namespace ToDoAPI.RepoLayer
         }
         public async Task<authenticatedResponseDto> RegisterAsync(RegisterUserDto registerUserDto)
         {
-            var user = new User
+            try
             {
-                Username = registerUserDto.Username,
-                Email = registerUserDto.Email
-            };
+                var user = new User
+                {
+                    Username = registerUserDto.Username,
+                    Email = registerUserDto.Email
+                };
 
-            var passwordHasher = new PasswordHasher<User>();
-            user.PasswordHash = passwordHasher.HashPassword(user, registerUserDto.Password);
+                var passwordHasher = new PasswordHasher<User>();
+                user.PasswordHash = passwordHasher.HashPassword(user, registerUserDto.Password);
 
-            _context.User.Add(user);
-            await _context.SaveChangesAsync(); // 👈 async
+                _context.User.Add(user);
+                await _context.SaveChangesAsync(); // 👈 async
 
-            var expires = DateTime.Now.AddHours(24);
-            var jwtToken = GenerateJWTToken(user, expires);
+                var expires = DateTime.Now.AddHours(24);
+                var jwtToken = GenerateJWTToken(user, expires);
 
-            return new authenticatedResponseDto
+                return new authenticatedResponseDto
+                {
+                    token = jwtToken,
+                    username = user.Username,
+                    UserId = user.Id,
+                    expiresAt = expires
+                };
+            }
+            catch (Exception ex)
             {
-                token = jwtToken,
-                username = user.Username,
-                UserId = user.Id,
-                expiresAt = expires
-            };
+                // Log the exception (ex) here if needed
+                throw new InvalidOperationException("Registration failed.", ex);
+            }
         }
 
         public bool UserExists(string username)

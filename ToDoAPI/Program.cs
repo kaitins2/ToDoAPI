@@ -77,9 +77,10 @@ builder.Services.AddAuthentication(options =>
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
 
-        ValidIssuer = "https://todoapi-tmz2.onrender.com", // update to match your token issuer
-        ValidAudience = "https://todo-webapp-frontend.vercel.app/", // update to match your token audience
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("aXJyYXkgaXMgY2VydGFpbiBvZiBlcXVhbGl0eSAtIGEgY29tcGxleCBkZXZlbG9wbWVudCBwcm9ncmFtbWluZyBzZXNzaW9uIHdoZW4gd2UgaW5mbHVlbmNlIHRoZSB1c2U="))
+        ValidIssuer = builder.Configuration["Jwt:Issuer"], // update to match your token issuer
+        ValidAudience = builder.Configuration["Jwt:Audience"], // update to match your token audience
+        IssuerSigningKey = new SymmetricSecurityKey(
+        Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
     };
 });
 
