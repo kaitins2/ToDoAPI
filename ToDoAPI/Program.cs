@@ -26,7 +26,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp", policy =>
     {
-        policy.WithOrigins("http://localhost:5173")
+        policy.WithOrigins("https://todo-webapp-frontend.vercel.app/ ")
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
@@ -77,8 +77,8 @@ builder.Services.AddAuthentication(options =>
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
 
-        ValidIssuer = "your_app_name_or_domain", // update to match your token issuer
-        ValidAudience = "your_app_name_or_domain", // update to match your token audience
+        ValidIssuer = "https://todoapi-tmz2.onrender.com", // update to match your token issuer
+        ValidAudience = "https://todo-webapp-frontend.vercel.app/", // update to match your token audience
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("aXJyYXkgaXMgY2VydGFpbiBvZiBlcXVhbGl0eSAtIGEgY29tcGxleCBkZXZlbG9wbWVudCBwcm9ncmFtbWluZyBzZXNzaW9uIHdoZW4gd2UgaW5mbHVlbmNlIHRoZSB1c2U="))
     };
 });
