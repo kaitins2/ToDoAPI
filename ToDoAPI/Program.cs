@@ -25,16 +25,15 @@ builder.Services.AddDbContext<ToDoDbContext>(options =>
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
-
+var  MyReactApp = "AllowReactApp";
 // Add CORS policy for React frontend
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowReactApp", policy =>
-    {
-        policy.WithOrigins()
-              .AllowAnyHeader()
-              .AllowAnyMethod();
-    });
+    options.AddPolicy(name: MyReactApp,
+                      policy =>
+                      {
+                          policy.WithOrigins("https://todo-webapp-frontend.vercel.app");
+                      });
 });
 
 
