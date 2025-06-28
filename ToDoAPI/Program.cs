@@ -26,17 +26,14 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
 
-// Add CORS policy for React frontend
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowReactApp", policy =>
-    {
-        policy.WithOrigins("https://todo-webapp-frontend.vercel.app")
-              .AllowAnyHeader()
-              .AllowAnyMethod();
-    });
+    options.AddPolicy(name: "AllowReactApp",
+                      policy =>
+                      {
+                          policy.WithOrigins("https://todo-webapp-frontend.vercel.app");
+                      });
 });
-
 
 // ✅ Swagger setup with JWT support
 builder.Services.AddSwaggerGen(c =>
