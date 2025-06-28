@@ -14,11 +14,13 @@ namespace ToDoAPI.RepoLayer
     {
         private readonly ToDoDbContext _context;
         private readonly IConfiguration _configuration;
+        private readonly ILogger<AuthRepository> _logger;
 
-        public AuthRepository(ToDoDbContext context, IConfiguration configuration)
+        public AuthRepository(ToDoDbContext context, IConfiguration configuration, ILogger<AuthRepository> logger)
         {
             _context = context;
             _configuration = configuration;
+            _logger = logger;
         }
 
 
@@ -108,6 +110,7 @@ namespace ToDoAPI.RepoLayer
             catch (Exception ex)
             {
                 // Log the exception (ex) here if needed
+                _logger.LogError(ex, "Error occurred during registration for user {Username}", registerUserDto.Username);
                 throw new InvalidOperationException("Registration failed.", ex);
             }
         }
@@ -115,6 +118,7 @@ namespace ToDoAPI.RepoLayer
         public bool UserExists(string username)
         {
             var user = _context.User.FirstOrDefault(x => x.Username == username);
+            _logger.LogInformation("User {Username} registered successfully with ID {UserId}", user.Username, user.Id);
             return user != null;
 
         }
