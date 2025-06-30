@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
+using System.Runtime.CompilerServices;
 using ToDoAPI.Model;
 using ToDoAPI.Model.DTO;
 using ToDoAPI.RepoLayer;
@@ -8,6 +10,7 @@ namespace ToDoAPI.Controllers
 {
     [Route("api/auth")]
     [ApiController]
+    [EnableCors("AllowReactApp")]
     public class AuthController : ControllerBase
     {
         private readonly IAuthRepository _repository;

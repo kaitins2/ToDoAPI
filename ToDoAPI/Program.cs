@@ -25,7 +25,9 @@ builder.Services.AddDbContext<ToDoDbContext>(options =>
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
-var  MyReactApp = "AllowReactApp";
+
+
+
 // Add CORS policy for React frontend
 builder.Services.AddCors(options =>
 {
@@ -33,6 +35,7 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins("https://todo-webapp-frontend.vercel.app")
               .AllowAnyHeader()
+              .AllowCredentials()
               .AllowAnyMethod();
     });
 });
@@ -101,14 +104,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.Use(async (context, next) =>
-{
-    if (context.Request.Headers.ContainsKey("Origin"))
-    {
-        Console.WriteLine($"Origin: {context.Request.Headers["Origin"]}");
-    }
-    await next();
-});
 
 app.UseCors("AllowReactApp");
 
