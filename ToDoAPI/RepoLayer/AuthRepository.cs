@@ -118,9 +118,11 @@ namespace ToDoAPI.RepoLayer
         public bool UserExists(string username)
         {
             var user = _context.User.FirstOrDefault(x => x.Username == username);
-            _logger.LogInformation("User {Username} registered successfully with ID {UserId}", user.Username, user.Id);
+            if (user != null)
+            {
+                _logger.LogInformation("User {Username} exists with ID {UserId}", user.Username, user.Id); 
+            }
             return user != null;
-
         }
     }
 }

@@ -10,7 +10,6 @@ namespace ToDoAPI.Controllers
 {
     [Route("api/auth")]
     [ApiController]
-    [EnableCors("AllowReactApp")]
     public class AuthController : ControllerBase
     {
         private readonly IAuthRepository _repository;
